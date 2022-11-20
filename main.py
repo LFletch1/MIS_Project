@@ -17,8 +17,8 @@ def main():
     # G = get_graph_from_file("data\\Cit-HepPh-Clean.txt", ",")
     # G = get_graph_from_file("data\\facebook_combined.txt", " ")
     # G = get_graph_from_file("data\\facebook_large.txt", ",")
-    G = get_graph_from_file("data\\US-Power-Grid.txt", ",")
-    # G = nx.gnm_random_graph(5000, 120000)
+    # G = get_graph_from_file("data\\US-Power-Grid.txt", ",")
+    G = nx.gnm_random_graph(5000, 120000)
     print(G.number_of_nodes())
     print(G.number_of_edges())
 
