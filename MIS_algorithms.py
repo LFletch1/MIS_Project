@@ -54,10 +54,9 @@ def lubys_MIS(G):
 
 def degree_1_MIS(G):
     G_ = nx.Graph(G) # Create copy of graph that can be manipulated
-    node_ranks =  rand.sample(range(0, G_.number_of_nodes()+1), G_.number_of_nodes())
     empty_graph = False
     MIS = []
-    total_one_degree_rounds = 0
+    # total_one_degree_rounds = 0
     total_MIS_rounds = 0
     while not empty_graph:
         # Add all degree one vertices to the MIS. Then remove all of these nodes and their neighbors from the graph.
@@ -65,7 +64,7 @@ def degree_1_MIS(G):
         # during this process. Similar to k-core.
         
         one_degree_nodes_exist = True
-        k = 0
+        # k = 0
         while one_degree_nodes_exist: # Could potentially set this to a limit of k iterations
             neighbors_to_remove = []
             I = []
@@ -97,12 +96,12 @@ def degree_1_MIS(G):
                 except nx.NetworkXError:
                     pass
 
-            k += 1
+            total_MIS_rounds += 1
 
             if len(I) == 0:
                 one_degree_nodes_exist = False
         
-        total_one_degree_rounds += k
+        # total_one_degree_rounds += k
 
         # Once no degree one nodes are present apply a slightly modified version of Libby's Algorithm
         X = {}
@@ -139,15 +138,99 @@ def degree_1_MIS(G):
                 G_.remove_node(y) 
             except nx.NetworkXError:
                 pass
+        
+        total_MIS_rounds += 1
 
         # print(G_.number_of_edges())
         if G_.number_of_nodes() == 0:
             empty_graph = True        
             
-    # print(total_one_degree_rounds, "one degree rounds")
-    # print("Number of nodes in G:", G_.number_of_nodes())
-    # print("MIS Size:", len(MIS))
     return MIS, total_MIS_rounds
+
+
+def blelloch_MIS(G):
+    G_ = nx.Graph(G)
+    node_ranks =  rand.sample(range(0, G_.number_of_nodes()+1), G_.number_of_nodes())
+    MIS = []
+    empty_graph = False
+    rounds = 0
+    while not empty_graph:
+        I = []
+        nodes_to_remove = []
+        for n in G_.nodes():
+            highest_rank = True
+            n_rank = node_ranks[n]
+            potential_neighbors_to_remove = []
+            for neigh in G_.neighbors(n): # Check if n is highest ranked node in set of neighbors. (Higher rank = Greater integer)
+                if node_ranks[neigh] > n_rank:
+                    highest_rank = False
+                    break
+                else:
+                    potential_neighbors_to_remove.append(neigh)
+
+            if highest_rank:
+                I.append(n)
+                nodes_to_remove += potential_neighbors_to_remove
+        
+        for i in I:
+            G_.remove_node(i)
+        for n in nodes_to_remove:
+            try: # Will potentially try to remove the same neighbors
+                G_.remove_node(n)
+            except nx.NetworkXError:
+                pass 
+        MIS += I
+        rounds += 1
+        if G_.number_of_nodes() == 0:
+            empty_graph = True
+
+    return MIS, rounds
+
+
+def alon_MIS(G):
+    G_ = nx.Graph(G)
+    MIS = []
+    rounds = 0
+    empty_graph = False
+    while not empty_graph:
+        H = {}
+        for n in G_.nodes():
+            d = G_.degree(n)
+            if d == 0:
+                H[n] = 1
+            elif rand.uniform(0,1) <= 1 / d:
+                H[n] = 1
+
+        S = list(H.keys())
+        for edge in G_.edges():
+            if H.get(edge[0]) != None and H.get(edge[1]) != None:
+                try:
+                    if rand.uniform(0,1) <= G_.degree(edge[0]) / (G_.degree(edge[0]) + G_.degree(edge[1])):
+                        S.remove(edge[1])
+                    else:
+                        S.remove(edge[0])
+                except ValueError:
+                    continue
+        
+        MIS += S
+        I = S[:] # Create list of all independent nodes and their neighbors
+        for i in S:
+            for n in G_.neighbors(i):
+                I.append(n)
+
+        for n in I:
+            try:
+                G_.remove_node(n) 
+            except nx.NetworkXError:
+                pass
+        
+        rounds += 1
+        if G_.number_of_nodes() == 0:
+            empty_graph = True
+
+    return MIS, rounds       
+
+        
 
 
 def valid_MIS(MIS, G):
@@ -169,31 +252,3 @@ def valid_MIS(MIS, G):
         if not neighbor_in_mis:
             return False
     return True
-
-
-        # I = []
-        # nodes_to_remove = []
-        # total_MIS_rounds += 1
-        # for n in G_.nodes():
-        #     highest_rank = True
-        #     n_rank = node_ranks[n]
-        #     potential_neighbors_to_remove = []
-        #     for neigh in G_.neighbors(n): # Check if n is highest ranked node in set of neighbors. (Higher rank = Greater integer)
-        #         if node_ranks[neigh] > n_rank:
-        #             highest_rank = False
-        #             break
-        #         else:
-        #             potential_neighbors_to_remove.append(neigh)
-
-        #     if highest_rank:
-        #         I.append(n)
-        #         nodes_to_remove += potential_neighbors_to_remove
-        
-        # for i in I:
-        #     G_.remove_node(i)
-        # for n in nodes_to_remove:
-        #     try: # Will potentially try to remove the same neighbors
-        #         G_.remove_node(n)
-        #     except nx.NetworkXError:
-        #         pass 
-        # MIS += I
