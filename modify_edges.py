@@ -3,8 +3,8 @@
 # causing an index error. Additionally get rid of any repeat edges to remove any
 # redundant work for the MIS algorithms. Also remove self edges.
 
-file = open("data\\power-US-Grid.mtx", "r")
-write_file = open("data\\US-Power-Grid.txt", "w")
+file = open("data\\facebook_combined.txt", "r")
+write_file = open("data\\facebook_small_clean.txt", "w")
 
 # 1921660
 edge_dict = {}

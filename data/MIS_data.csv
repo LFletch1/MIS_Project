@@ -1,0 +1,21 @@
+Graph,Algorithm,Avg_MIS,Avg_Rounds,Largest_MIS
+Enron,Luby,21273.89,11.56,21399
+Enron,Alon,21411.85,6.15,21506
+Enron,Blelloch,20771.93,5.02,20920
+Enron,Degree One,22040.51,56.53,22080
+Power-Grid,Luby,2446.06,7.03,2489
+Power-Grid,Alon,2489.75,3.61,2532
+Power-Grid,Blelloch,2378.42,3.72,2431
+Power-Grid,Degree One,2727.17,30.01,2735
+Citation,Luby,10919.82,11.05,11060
+Citation,Alon,11066.38,6.26,11197
+Citation,Blelloch,10221.7,5.88,10463
+Citation,Degree One,11945.01,72.26,12041
+Facebook1,Luby,842.48,10.77,873
+Facebook1,Alon,857.7,6.55,895
+Facebook1,Blelloch,807.64,5.14,840
+Facebook1,Degree One,915.07,49.48,936
+Facebook2,Luby,9478.64,10.24,9585
+Facebook2,Alon,9605.85,6.08,9726
+Facebook2,Blelloch,8982.4,5.25,9176
+Facebook2,Degree One,10358.14,69.04,10435

@@ -231,8 +231,6 @@ def alon_MIS(G):
     return MIS, rounds       
 
         
-
-
 def valid_MIS(MIS, G):
     '''Checks for maximality and checks that no adjacency violations are present (independent set)'''
     # Independent Set Check
