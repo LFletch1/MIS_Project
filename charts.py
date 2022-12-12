@@ -28,10 +28,12 @@ def graphs_comparison():
     
     plt.xlabel("Graph", fontweight="bold", fontsize=15)
     plt.ylabel("Average MIS Size", fontweight="bold", fontsize=15)
-    plt.xticks([w + (1.5 * bar_width) for w in range(number_of_graphs)], graph_df["Graph"].unique())
+    plt.yticks(fontsize=14)
+    plt.xticks([w + (1.5 * bar_width) for w in range(number_of_graphs)], graph_df["Graph"].unique(), fontsize=14)
 
     plt.legend()
     plt.savefig("graph_compare_bar_plot.png")
+    # plt.show()
 
 
 

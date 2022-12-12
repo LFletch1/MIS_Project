@@ -1,6 +1,6 @@
 import networkx as nx
 import random as rand
-import matplotlib.pyplot as plt
+import time
 
 def lubys_MIS(G):
     G_ = nx.Graph(G) # Create copy of graph that can be manipulated
@@ -52,7 +52,16 @@ def lubys_MIS(G):
     return I, rounds
 
 
-def degree_1_MIS(G):
+def degree_1_MIS(G, r=None):
+    '''k - Number of degree one rounds to perform. If k is None then keep recursively performing degree one rounds
+       until there are degree one nodes present in the graph'''
+
+    if r == None:
+        recurse_fully = True
+        r = 100 # Doesn't matter because recurse fully is true
+    else:
+        recurse_fully = False
+
     G_ = nx.Graph(G) # Create copy of graph that can be manipulated
     empty_graph = False
     MIS = []
@@ -65,7 +74,8 @@ def degree_1_MIS(G):
         
         one_degree_nodes_exist = True
         # k = 0
-        while one_degree_nodes_exist: # Could potentially set this to a limit of k iterations
+        degree_one_rounds = 0
+        while one_degree_nodes_exist and (degree_one_rounds <= r or recurse_fully):
             neighbors_to_remove = []
             I = []
             pairs = []
@@ -97,6 +107,8 @@ def degree_1_MIS(G):
                     pass
 
             total_MIS_rounds += 1
+            # print(degree_one_rounds)
+            degree_one_rounds += 1
 
             if len(I) == 0:
                 one_degree_nodes_exist = False
@@ -205,7 +217,7 @@ def alon_MIS(G):
         for edge in G_.edges():
             if H.get(edge[0]) != None and H.get(edge[1]) != None:
                 try:
-                    if rand.uniform(0,1) <= G_.degree(edge[0]) / (G_.degree(edge[0]) + G_.degree(edge[1])):
+                    if rand.uniform(0,1) <= G_.degree(edge[0]) / (G_.degree(edge[1]) + G_.degree(edge[0])):
                         S.remove(edge[1])
                     else:
                         S.remove(edge[0])
@@ -250,3 +262,51 @@ def valid_MIS(MIS, G):
         if not neighbor_in_mis:
             return False
     return True
+
+
+def get_k_MIS(graph, MIS_func, name, k, v=True, r=None):
+    '''Get k amount of MISs and be returned the Avg. MIS Size, Avg. Parallel Rounds, and Largest MIS
+        r is the parameter passed ot the degree_one MIS algorithm'''
+    if v:
+        print("Generting Maximal Independent Sets using " + name)
+    total = 0
+    total_rounds = 0
+    largest_MIS = 0
+    loader_length = 50
+    div = k // loader_length
+    for i in range(1, k+1):
+        if v:
+            if i % div == 0:
+                percent_done = i // div
+                print("\r", end="")
+                print("[" + "#" * (i // div) + " " * (loader_length - percent_done) + "]", end="")
+                time.sleep(0.5)
+        if r != None:
+            MIS, rounds = MIS_func(graph, r)
+        else:
+            MIS, rounds = MIS_func(graph)
+        size = len(MIS)
+        if size > largest_MIS:
+            largest_MIS = size 
+        total += size
+        total_rounds += rounds 
+    print()
+    
+    avg_MIS = total / k
+    avg_rounds = total_rounds / k
+    if v:
+        print("Average MIS Size:", total / k)
+        print("Average Rounds:", total_rounds / k)
+        print("Largest MIS:", largest_MIS)
+
+    return avg_MIS, avg_rounds, largest_MIS
+
+
+def get_graph_from_file(filename, delim=","):
+    G = nx.Graph()
+    file = open(filename, "r")
+    for line in file:
+        edge = line.strip("\n").split(delim)
+        G.add_edge(int(edge[0]), int(edge[1]))
+
+    return G
